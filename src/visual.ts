@@ -80,14 +80,11 @@ module powerbi.extensibility.visual {
             let filter: any = null;
             let action = FilterAction.remove;
             if (!isBlank) {
-              filter = new models.AdvancedFilter(
+              filter = models.IBasicFilter = {
                 target,
-                "And",
-                {
-                  operator: "Contains",
-                  value: text
-                }
-              );
+                operator: "In",
+                values: text.split(' ')
+              };
               action = FilterAction.merge;
             }
             this.host.applyJsonFilter(filter, "general", "filter", action);
@@ -111,9 +108,9 @@ module powerbi.extensibility.visual {
 
             // Well, it hasn't changed, then lets try to load the existing search text.
             } else if (properties.filter) {
-              const appliedFilter = FilterManager.restoreFilter(properties.filter) as IAdvancedFilter;
-              if (appliedFilter && appliedFilter.conditions && appliedFilter.conditions.length === 1) {
-                searchText = (appliedFilter.conditions[0].value || "") + "";
+              const appliedFilter = FilterManager.restoreFilter(properties.filter) as IBasicFilter;
+              if (appliedFilter && appliedFilter.values && appliedFilter.values.length === 1) {
+                searchText = (appliedFilter.values[0] || "") + "";
               }
             }
 
